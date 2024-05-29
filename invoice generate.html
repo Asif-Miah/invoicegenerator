@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Dynamic Invoice Generator</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,100i,300,300i,400&display=swap" rel="stylesheet">
+    <style>
+        * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f5f5f5;
+}
+
+.invoice-container {
+    width: 90%;
+    max-width: 800px;
+    margin: 50px auto;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.invoice-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.title {
+    font-size: 24px;
+    color: #333;
+}
+
+.date {
+    font-size: 14px;
+    color: #666;
+}
+
+.invoice-number {
+    font-size: 20px;
+    color: #666;
+}
+
+.invoice-body table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.invoice-body th,
+.invoice-body td {
+    padding: 10px 0;
+    border-bottom: 1px solid #eee;
+}
+
+.invoice-body input[type="text"],
+.invoice-body input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    outline: none;
+}
+
+.invoice-body input[type="text"]:focus,
+.invoice-body input[type="number"]:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5);
+}
+
+.invoice-body .material-icons {
+    cursor: pointer;
+    color: #888;
+}
+
+.invoice-body .material-icons:hover {
+    color: #333;
+}
+
+.float {
+    width: 40px;
+    height: 40px;
+    background-color: #3498db;
+    color: #fff;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 40px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.float:hover {
+    background-color: #2980b9;
+}
+
+.total {
+    font-size: 20px;
+    font-weight: bold;
+    color: #333;
+    margin-top: 20px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #3498db;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+@media (max-width: 768px) {
+    .invoice-container {
+        padding: 10px;
+    }
+}
+@media print {
+    body {
+        background-color: #fff;
+    }
+
+    .invoice-container {
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .invoice-header {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+
+    .invoice-number {
+        font-size: 16px;
+    }
+
+    .invoice-body {
+        margin-top: 20px;
+    }
+
+    .material-icons {
+        display: none;
+    }
+
+    .float {
+        display: none;
+    }
+
+    .total {
+        margin-top: 30px;
+    }
+
+    button {
+        display: none;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+        border: none;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+        border: none;
+        box-shadow: none;
+    }
+}
+
+
+/* Add your custom styles here */
+    </style>
+</head>
+
+<body>
+    <div class="invoice-container">
+        <div class="invoice-header">
+            <div class="title-date">
+                <h2 class="title">INVOICE</h2>
+                <p class="date">01/12/20</p>
+            </div>
+            <div class="space"></div>
+            <p class="invoice-number">#08 279</p>
+        </div>
+        <div class="invoice-body">
+            <table>
+                <thead>
+                    <th style="padding-left:12px;">PRODUCT</th>
+                    <th>UNIT</th>
+                    <th>PRICE</th>
+                    <th>AMOUNT</th>
+                    <th style="text-align: right;">ACTION</th>
+                </thead>
+
+                <tbody id="table-body">
+                    <tr class="single-row">
+                        <td><input type="text" placeholder="Product name" class="product left"></td>
+                        <td><input type="number" placeholder="0" name="unit" class="unit" oninput="getInput(this)"></td>
+                        <td><input type="number" placeholder="0" name="price" class="price" oninput="getInput(this)"></td>
+                        <td><input type="number" placeholder="0" name="amount" class="amount" disabled></td>
+                        <td style="text-align: right;"><span class="material-icons" onclick="deleteRow(this)">delete_outline</span></td>
+                    </tr>
+
+                    <tr style="padding-left: 20px">
+                        <td class="dashed "><div class="float">
+                            <a href="#" class="float" onclick="addNewRow()">
+                                <span class="material-icons plus">add</span>
+                            </a>
+                        </div></td>
+                        <td class="dashed"></td>
+                        <td class="dashed"></td>
+                        <td class="dashed"></td>
+                        <td class="dashed"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div id="sum"><input type="text" placeholder="0.00" name="total" class="total" id="total" disabled></div>
+
+            <button onclick="printInvoice()" style="margin-top: 20px;">Print Invoice</button>
+        </div>
+    </div>
+
+    <script>
+        const tBody = document.getElementById("table-body");
+
+        function addNewRow() {
+            const row = document.createElement("tr");
+            row.className = "single-row";
+            row.innerHTML = `<td><input type="text" placeholder="Product name" class="product"></td>
+                    <td><input type="number" placeholder="0" name="unit" class="unit" oninput="getInput(this)"></td>
+                    <td><input type="number" placeholder="0" name="price" class="price" oninput="getInput(this)"></td>
+                    <td><input type="number" placeholder="0" name="amount" class="amount" disabled></td>
+                    <td style="text-align: right;"><span class="material-icons" onclick="deleteRow(this)">delete_outline</span></td>`
+            tBody.insertBefore(row, tBody.lastElementChild.previousSibling);
+        }
+
+        function getInput(input) {
+            const currentRow = input.parentNode.parentNode;
+            const unit = parseFloat(currentRow.querySelector(".unit").value) || 0;
+            const price = parseFloat(currentRow.querySelector(".price").value) || 0;
+            const amount = unit * price;
+            currentRow.querySelector(".amount").value = amount.toFixed(2);
+            overallSum();
+        }
+
+        function overallSum() {
+            const amounts = document.querySelectorAll(".amount");
+            let total = 0;
+            amounts.forEach(amount => {
+                total += parseFloat(amount.value) || 0;
+            });
+            document.getElementById("total").value = total.toFixed(2);
+        }
+
+        function deleteRow(icon) {
+            const row = icon.parentNode.parentNode;
+            row.parentNode.removeChild(row);
+            overallSum();
+        }
+
+        function printInvoice() {
+            window.print();
+        }
+    </script>
+</body>
+
+</html>
